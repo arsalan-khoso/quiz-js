@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #4CAF50;
+        }
+
+        #timer {
+            font-size: 20px;
+            color: red;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .question {
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        .options {
+            margin-top: 10px;
+            font-size: 16px;
+        }
+
+        .options label {
+            display: block;
+            margin: 10px 0;
+            cursor: pointer;
+            padding: 5px;
+            background-color: #f2f2f2;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .options input[type="radio"]:checked + label {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .options label:hover {
+            background-color: #e0e0e0;
+        }
+
+        #next-btn, #start-btn {
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #next-btn:hover, #start-btn:hover {
+            background-color: #45a049;
+        }
+
+        #next-btn:disabled, #start-btn:disabled {
+            background-color: #b5d8b5;
+            cursor: not-allowed;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        #next-btn:focus, #start-btn:focus {
+            outline: none;
+        }
+
+        .popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .popup-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .popup h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .popup button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .popup button:hover {
+            background-color: #45a049;
+        }
+
+        .popup.active {
+            display: flex;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 id="quiz-title">Python Quiz</h1>
+    <div id="timer"></div>
+    <div id="quiz"></div>
+    <button id="start-btn">Start Quiz</button>
+    <button id="next-btn" style="display: none;">Next</button>
+    <div id="result"></div>
+</div>
+
+<div class="popup" id="time-up-popup">
+    <div class="popup-content">
+        <h2>Time's Up!</h2>
+        <p>Your time has expired. The quiz is over.</p>
+        <button onclick="closePopup()">OK</button>
+    </div>
+</div>
+
+<script>
+    const quiz = {
+        title: "Python Quiz - Answer all the questions",
+        questions: [
+            { question: "How to add a single-line comment in Python?", options: ["/* This is a comment */", "!! This is a comment", "// This is a comment", "# This is a comment"], correct: "# This is a comment" },
+            { question: "How to output the string 'May the odds favor you' in Python?", options: ['print("May the odds favor you")', 'echo("May the odds favor you")', 'System.out("May the odds favor you")', 'printf("May the odds favor you")'], correct: 'print("May the odds favor you")' },
+            { question: "How to create a variable in Python with a value 22.6?", options: ["int a = 22.6", "a = 22.6", "Integer a = 22.6", "None of the above"], correct: "a = 22.6" },
+            { question: "Select the correct example of the complex datatype in Python", options: ["3 + 2j", "-100j", "5j", "All the above are correct"], correct: "All the above are correct" },
+            { question: "What is the correct way of creating a multi-line string in Python?", options: ['str = """My name is Kevin and I\nlive in New York"""', 'str = "My name is Kevin and I\nlive in New York"', 'str = """My name is Kevin and I\nlive in New York"""', 'All the above'], correct: 'str = """My name is Kevin and I\nlive in New York"""' },
+            { question: "How to convert the uppercase letters in the string to lowercase in Python?", options: ["lowercase()", "capitalize()", "lower()", "toLower()"], correct: "lower()" },
+            { question: "How to access substring 'Kevin' from the following string declaration in Python?", options: ["str[11:16]", "str(11:16)", "str[11][16]", "str[11-16]"], correct: "str[11:16]" },
+            { question: "To begin slicing from the end of the string, which of the following is used in Python?", options: ["Indexing", "Negative Indexing", "Begin with the 0th index", "Escape Characters"], correct: "Negative Indexing" },
+            { question: "How to fetch characters from a given range in Python?", options: [":", "in operator", "[]", "None of the above"], correct: ":" },
+            { question: "How to capitalize only the first letter of a sentence in Python?", options: ["uppercase() method", "capitalize() method", "upper() method", "None of the above"], correct: "capitalize() method" },
+            { question: "What will the expression '2 + 3 * 4' return?", options: ["14", "20", "8", "None of the above"], correct: "14" },
+            { question: "Which of the following is the correct syntax for defining a function in Python?", options: ["function myFunc():", "def myFunc():", "func myFunc():", "define myFunc():"], correct: "def myFunc():" },
+            { question: "How to import a module in Python?", options: ["import module_name", "include module_name", "use module_name", "module import"], correct: "import module_name" },
+            { question: "What is the correct way to initialize a list with elements in Python?", options: ["[]", "()", "{}", "list()"], correct: "[]" },
+            { question: "Which of the following are immutable in Python?", options: ["list", "set", "tuple", "dictionary"], correct: "tuple" },
+            { question: "What does the len() function return in Python?", options: ["Length of a string", "Size of a list", "Length of an object", "All of the above"], correct: "All of the above" },
+            { question: "Which function is used to get the type of an object in Python?", options: ["type()", "typeof()", "object_type()", "class()"], correct: "type()" },
+            { question: "What is the result of 5 // 2 in Python?", options: ["2", "2.5", "3", "None of the above"], correct: "2" },
+            { question: "What is the keyword used to declare a constant in Python?", options: ["constant", "const", "final", "None of the above"], correct: "None of the above" },
+            { question: "Which of the following is used to handle exceptions in Python?", options: ["try", "except", "finally", "All of the above"], correct: "All of the above" },
+            { question: "What is the default value of a function parameter in Python?", options: ["0", "None", "False", "Null"], correct: "None" },
+            { question: "Which of the following is used for variable unpacking in Python?", options: ["*", "**", "()", "[]"], correct: "*" },
+            { question: "What is the output of 'abc' * 2 in Python?", options: ["abcabc", "aabbcc", "None of the above", "Error"], correct: "abcabc" },
+            { question: "How do you declare a set in Python?", options: ["{}", "[]", "()", "set()"], correct: "{}" },
+            { question: "How can you check if a value exists in a list?", options: ["in operator", "exists()", "find()", "has()"], correct: "in operator" },
+            { question: "Which method is used to remove the last item from a list?", options: ["pop()", "remove()", "del()", "clear()"], correct: "pop()" },
+            { question: "How to declare a tuple in Python?", options: ["()", "[]", "{}", "tuple()"], correct: "()" },
+            { question: "Which of the following are mutable in Python?", options: ["list", "tuple", "set", "None of the above"], correct: "list, set" },
+            { question: "What type of error will the following code produce? print('Hello' + 5)", options: ["SyntaxError", "TypeError", "ValueError", "IndexError"], correct: "TypeError" },
+            { question: "How to reverse a string in Python?", options: ["reverse()", "reversed()", "[::-1]", "reverse_string()"], correct: "[::-1]" },
+            { question: "How do you write a Python program to accept a user’s name?", options: ["input()", "get_input()", "read()", "ask()"], correct: "input()" },
+            { question: "Which of the following is not a valid Python data type?", options: ["String", "List", "Dictionary", "Character"], correct: "Character" },
+            { question: "What is the keyword used for declaring a class in Python?", options: ["define", "class", "struct", "object"], correct: "class" },
+            { question: "What is used for creating a new object in Python?", options: ["class()", "object()", "new()", "init()"], correct: "object()" },
+            { question: "Which of the following is used to handle errors in Python?", options: ["try/except block", "error/try", "catch/throw", "None of the above"], correct: "try/except block" },
+            { question: "How do you make a string all lowercase in Python?", options: ["str.lower()", "str.up()", "str.toLower()", "str.toLowerCase()"], correct: "str.lower()" },
+            { question: "What does the command 'break' do in Python?", options: ["Breaks the loop", "Ends the function", "Ends the program", "None of the above"], correct: "Breaks the loop" },
+            { question: "What is the correct syntax for defining a dictionary in Python?", options: ["{}", "[]", "()", "None of the above"], correct: "{}" },
+            { question: "Which of the following is not a valid operator in Python?", options: ["++", "--", "+", "*"], correct: "++" },
+            { question: "Which of the following will create a Python class?", options: ["class MyClass:", "def MyClass:", "class MyClass", "class MyClass{}"], correct: "class MyClass:" },
+            { question: "Which function is used to round a number to the nearest integer in Python?", options: ["round()", "ceil()", "floor()", "none of the above"], correct: "round()" },
+            { question: "What is the output of 5 ** 2 in Python?", options: ["10", "25", "5", "None of the above"], correct: "25" },
+            { question: "How can you check if a number is even in Python?", options: ["num % 2 == 0", "num % 2 = 0", "num / 2 == 0", "None of the above"], correct: "num % 2 == 0" }
+        ]
+    };
+
+    let quizTitle = document.getElementById('quiz-title');
+    quizTitle.textContent = quiz.title;
+
+    let quizDiv = document.getElementById('quiz');
+    let resultDiv = document.getElementById('result');
+    let nextBtn = document.getElementById('next-btn');
+    let startBtn = document.getElementById('start-btn');
+    let timerDiv = document.getElementById('timer');
+    let timeUpPopup = document.getElementById('time-up-popup');
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timeLeft = 3000; // 50 minutes timer (in seconds)
+    let timerInterval;
+
+    function showQuestion(index) {
+        let question = quiz.questions[index];
+        quizDiv.innerHTML = `
+            <div class="question">
+                <p>${index + 1}. ${question.question}</p>
+                <div class="options">
+                    ${question.options.map(option => 
+                        `<label><input type="radio" name="question-${index}" value="${option}"> ${option}</label>`
+                    ).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    function calculateScore() {
+        quiz.questions.forEach((q, index) => {
+            let selectedOption = document.querySelector(`input[name="question-${index}"]:checked`);
+            if (selectedOption && selectedOption.value === q.correct) {
+                score++;
+            }
+        });
+        resultDiv.innerHTML = `<h2>Your score is: ${score} out of ${quiz.questions.length}</h2>`;
+    }
+
+    function startTimer() {
+        timerInterval = setInterval(function() {
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                showTimeUpPopup();
+                calculateScore();
+                nextBtn.disabled = true; // Disable next button after time is up
+            } else {
+                timeLeft--;
+                let minutes = Math.floor(timeLeft / 60);
+                let seconds = timeLeft % 60;
+                timerDiv.textContent = `Time Left: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            }
+        }, 1000);
+    }
+
+    function showTimeUpPopup() {
+        timeUpPopup.classList.add('active');
+    }
+
+    function closePopup() {
+        timeUpPopup.classList.remove('active');
+    }
+
+    startBtn.addEventListener('click', function() {
+        startBtn.style.display = 'none';
+        nextBtn.style.display = 'inline-block';
+        showQuestion(currentQuestionIndex);
+        startTimer();
+    });
+
+    nextBtn.addEventListener('click', function() {
+        if (currentQuestionIndex < quiz.questions.length - 1) {
+            currentQuestionIndex++;
+            showQuestion(currentQuestionIndex);
+        } else {
+            clearInterval(timerInterval);
+            calculateScore();
+            nextBtn.disabled = true;
+            resultDiv.style.display = 'block';
+        }
+    });
+</script>
+</body>
+</html>
